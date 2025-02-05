@@ -25,5 +25,8 @@
     "@faker-js/faker": "^9.4.0",
     "nodemon": "^3.1.9",
     "prisma": "^6.3.1"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   }
 }

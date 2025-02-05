@@ -12,3 +12,48 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id          String     @id @default(uuid())
+  firstName   String
+  lastName    String
+  email       String     @unique
+  venueName   String
+  password    String     // Hashed password
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  prospects   Prospect[] // Relationship with musicians through Prospect model
+}
+
+model Musician {
+  id                    String     @id @default(uuid())
+  actName              String
+  homebase             String
+  active               Boolean
+  genre                String
+  averageTicketPrice   Decimal    @db.Decimal(10, 2)
+  averageVenueCapacity Int
+  lastThreeVenues      Json       // Stored as JSON array
+  agent                String
+  agentEmail           String
+  agentPhone           String
+  agency               String
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+  prospects            Prospect[] // Relationship with venues through Prospect model
+}
+
+model Prospect {
+  id         String    @id @default(uuid())
+  user       User      @relation(fields: [userId], references: [id])
+  userId     String
+  musician   Musician  @relation(fields: [musicianId], references: [id])
+  musicianId String
+  status     String    // e.g., "Interested", "Contacted", "Negotiating", "Booked", "Rejected"
+  notes      String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@unique([userId, musicianId]) // Ensures a venue can't add the same musician twice
+}
+
