@@ -59,5 +59,4 @@ Meet Lucy, a talent manager at a nearby venue, who is desperately seeking fresh 
 - **Development Sprints (2 weeks):** Extensive coding phases, back-to-back sprints.
 - **Testing & Quality Assurance (3 days):** Thorough validation, including beta testing with a small group of initial users.
 - **Launch Preparation (3 days):** Finalize marketing strategies, prepare back-end setup.
-- **Go-live (21 day):** Initiate phased launch, monitor systems closely.
-- **Post-Launch Evaluation (1 week):** Gather user feedback, fix initial bugs, analyze metrics.
+- **Go-live (1 day):** Launch and present.
