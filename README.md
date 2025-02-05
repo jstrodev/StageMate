@@ -55,7 +55,6 @@ Meet Lucy, a talent manager at a nearby venue, who is desperately seeking fresh 
 ### Team Size & Composition:
 - **Medium team (3-5 people):** 1 Product Manager, 2 Developers, 1 Designer, 1 Marketing Specialist.
 ### Suggested Phases:
-- **Discovery & Planning (1 week):** Conduct market research, finalize requirements.
 - **Design & Prototyping (1 week):** Develop UI wireframes; aim for usability testing.
 - **Development Sprints (2 weeks):** Extensive coding phases, back-to-back sprints.
 - **Testing & Quality Assurance (3 days):** Thorough validation, including beta testing with a small group of initial users.
