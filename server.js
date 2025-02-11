@@ -25,7 +25,7 @@ const verifyToken = (req, res, next) => {
 };
 
 app.post("/api/users/register", async (req, res, next) => {
-  const { email, firstName, lastName, password } = req.body;
+  const { email, firstName, lastName, password, venueName } = req.body;
   try {
     // Check if email is already in use
     const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -43,6 +43,7 @@ app.post("/api/users/register", async (req, res, next) => {
         firstName,
         lastName,
         password: hashedPassword,
+        venueName,
       },
     });
 
