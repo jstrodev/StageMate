@@ -18,10 +18,8 @@ model User {
   firstName   String
   lastName    String
   email       String     @unique
-  venueName   String
   password    String     // Hashed password
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  venueName   String
   prospects   Prospect[] // Relationship with musicians through Prospect model
 }
 
