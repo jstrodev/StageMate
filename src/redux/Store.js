@@ -1,22 +1,19 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { bookApi } from "./slices/bookSlice";
+import { setupListeners } from "@reduxjs/toolkit/query";
 import { authApi } from "./slices/authSlice";
-import authReducer from "./slices/authSlice";
+import { musicianApi } from "./slices/musicianSlice";
+import authReducer from "./slices/authReducer";
 
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     auth: authReducer,
-    [bookApi.reducerPath]: bookApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
-  },
-  preloadedState: {
-    auth: {
-      token: localStorage.getItem('token') || null,
-      user: null,
-    },
+    [musicianApi.reducerPath]: musicianApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware()
-      .concat(bookApi.middleware)
-      .concat(authApi.middleware),
+    getDefaultMiddleware().concat(authApi.middleware, musicianApi.middleware),
 });
+
+setupListeners(store.dispatch);
+
+export default store;
