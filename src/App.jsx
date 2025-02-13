@@ -3,7 +3,10 @@ import { useSelector } from "react-redux";
 import RequireAuth from "./components/Authentication/RequireAuth";
 import Account from "./components/Account/AccountPage";
 import Login from "./components/Authentication/Login";
+ main
+import SingleMusician from "./components/SingleMusician"; // TODO: Change to SingleMusician
 import SingleMusician from "./components/SingleMusician";
+main
 import HomePage from "./pages/HomePage";
 import Register from "./components/Authentication/Register";
 import NotFound from "./pages/NotFound";

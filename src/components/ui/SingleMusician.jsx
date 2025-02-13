@@ -17,7 +17,8 @@ const SingleMusician = () => {
   const token = useSelector(selectCurrentToken);
 
   const { data: musician, isLoading, error } = useGetMusicianByIdQuery(id);
-  const [updateMusician, { isLoading: isUpdating }] = useUpdateMusicianMutation();
+  const [updateMusician, { isLoading: isUpdating }] =
+    useUpdateMusicianMutation();
   const [returnMusician] = useRemoveReservationMutation();
   const { data: userData } = useGetMeQuery();
 
@@ -80,7 +81,7 @@ const SingleMusician = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <img // Delete this if we don't have a cover image
-                src={book.coverimage} 
+                src={book.coverimage}
                 alt={book.title}
                 className="w-full rounded-lg shadow-lg"
               />

@@ -1,8 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
+ main
+import { setupListeners } from "@reduxjs/toolkit/query";
+import { authApi } from "./slices/authSlice";
+import { musicianApi } from "./slices/musicianSlice";
+import authReducer from "./slices/authReducer";
+
 import authReducer, { authApi } from "./slices/authSlice";
 import { musicianApi } from "./slices/musicianSlice";
+ main
 
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     auth: authReducer,
     [authApi.reducerPath]: authApi.reducer,
@@ -12,4 +19,9 @@ export const store = configureStore({
     getDefaultMiddleware().concat(authApi.middleware, musicianApi.middleware),
 });
 
+ main
+setupListeners(store.dispatch);
+
+
+ main
 export default store;
