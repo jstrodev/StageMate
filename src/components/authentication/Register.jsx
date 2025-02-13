@@ -1,3 +1,7 @@
+// Users enter name, email, password
+// Registers an account & logs in automatically
+// Redirects to Account Page
+
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';

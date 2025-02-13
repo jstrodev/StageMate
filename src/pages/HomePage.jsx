@@ -1,3 +1,5 @@
+// Displays a welcome message and introduces the platform, May include a featured musician section, If user is logged in, it could show recently added musicians
+
 import MusicianList from '../components/Musicians/MusicianList';
 
 const HomePage = () => {

@@ -54,4 +54,3 @@ model Prospect {
 
   @@unique([userId, musicianId]) // Ensures a venue can't add the same musician twice
 }
-

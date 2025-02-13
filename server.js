@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
@@ -5,7 +7,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const app = express();
 const cors = require("cors");
-app.use(cors({origin:["http://127.0.0.1:5173"]}));
+
+app.use(cors({ origin: ["http://127.0.0.1:5173"] }));
 app.use(express.json());
 
 const verifyToken = (req, res, next) => {
@@ -27,6 +30,11 @@ const verifyToken = (req, res, next) => {
 
 app.post("/api/users/register", async (req, res, next) => {
   const { email, firstName, lastName, password, venueName } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
   try {
     // Check if email is already in use
     const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -53,7 +61,7 @@ app.post("/api/users/register", async (req, res, next) => {
       { id: newUser.id, email: newUser.email },
       process.env.JWT_SECRET,
       {
-        expiresIn: "24H",
+        expiresIn: "24h",
       }
     );
 
@@ -63,7 +71,7 @@ app.post("/api/users/register", async (req, res, next) => {
       token,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -88,7 +96,7 @@ app.post("/api/users/login", async (req, res, next) => {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: "24H",
+        expiresIn: "24h",
       }
     );
     res.status(201).json({ token, message: "login successful" });
@@ -211,6 +219,10 @@ app.put("/api/users/:id", verifyToken, async (req, res) => {
     console.error("Error updating user:", error);
     res.status(500).json({ message: "Server error" });
   }
+});
+
+app.post("/api/users/logout", (req, res) => {
+  res.status(200).json({ message: "Logged out successfully" });
 });
 
 app.listen(3000, () => {
