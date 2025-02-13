@@ -1,3 +1,7 @@
+// Users enter email & password
+// Submits data to backend & receives JWT token
+// If successful, redirects to Account Page
+
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';

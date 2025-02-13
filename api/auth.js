@@ -4,9 +4,8 @@ const jwt = require("jsonwebtoken");
 const prisma = require("../db");
 const { JWT_SECRET } = process.env;
 
-// Helper function to create JWT token
-function createToken(id) {
-  return jwt.sign({ id }, JWT_SECRET, { expiresIn: "1d" });
+if (!JWT_SECRET) {
+  throw new Error("Missing JWT_SECRET in environment variables");
 }
 
 // Register
@@ -46,6 +45,11 @@ router.post("/login", async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+});
+
+// Logout
+router.post("/api/users/logout", (req, res) => {
+  res.status(200).json({ message: "Logged out successfully" });
 });
 
 module.exports = router;

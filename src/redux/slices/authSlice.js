@@ -3,7 +3,7 @@
  *
  * Purpose:
  * Handles authentication state with JWT. Manages the user's login status and
- * token storage, and provides actions for login and logout.
+ * token storage, and provides actions for login, logout, and user management.
  */
 
 import { createSlice } from "@reduxjs/toolkit";
@@ -17,7 +17,7 @@ const initialState = {
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://fsa-book-buddy-b6e748d1380d.herokuapp.com/api",
+    // baseUrl: "https://your-api-url.com/api", // Update with actual API URL
     prepareHeaders: (headers, { getState }) => {
       const token = getState().auth.token;
       if (token) {
@@ -40,37 +40,29 @@ export const authApi = createApi({
         method: "POST",
         body: credentials,
       }),
-      transformResponse: (response) => {
-        return {
-          user: response.user,
-          token: response.token,
-        };
-      },
+      transformResponse: (response) => ({
+        user: response.user,
+        token: response.token,
+      }),
       invalidatesTags: ["User"],
     }),
     getMe: builder.query({
       query: () => ({
         url: "/users/me",
-        headers: {
-          authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
       }),
       providesTags: ["User"],
     }),
-    returnBook: builder.mutation({
-      query: (bookId) => ({
-        url: `/reservations/${bookId}`,
-        method: "DELETE",
-        headers: {
-          authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }),
-      invalidatesTags: ["User", "Books"],
-    }),
-    checkoutBook: builder.mutation({
-      query: (bookId) => ({
-        url: `/books/${bookId}/checkout`,
+    addMusician: builder.mutation({
+      query: (musicianId) => ({
+        url: `/musicians/${musicianId}/add`,
         method: "POST",
+      }),
+      invalidatesTags: ["User"],
+    }),
+    deleteMusician: builder.mutation({
+      query: (musicianId) => ({
+        url: `/musicians/${musicianId}/delete`,
+        method: "DELETE",
       }),
       invalidatesTags: ["User"],
     }),
@@ -104,8 +96,8 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useGetMeQuery,
-  useReturnBookMutation,
-  useCheckoutBookMutation,
+  useAddMusicianMutation,
+  useDeleteMusicianMutation,
 } = authApi;
 
 export default authSlice.reducer;

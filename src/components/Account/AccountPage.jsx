@@ -1,7 +1,11 @@
-// src/components/Account/AccountPage.jsx
+// Displays user profile info (name, email, etc.)
+// Shows list of added musicians with "Unadd" buttons
+// If user has no musicians, it shows "You haven't added any musicians yet"
+// Button to logout
+
 import {
   useGetMeQuery,
-  useReturnBookMutation,
+  useDeleteMusicianMutation,
 } from "../../redux/slices/authSlice";
 import {
   Card,
@@ -23,23 +27,23 @@ const Account = () => {
     refetchOnMountOrArgChange: true,
   });
 
-  const [returnBook] = useReturnBookMutation();
+  const [deleteMusician] = useDeleteMusicianMutation();
 
-  const handleReturnBook = async (bookId) => {
+  const handleDeleteMusician = async (musicianId) => {
     try {
-      const result = await returnBook(bookId).unwrap();
+      const result = await deleteMusician(musicianId).unwrap();
       await refetch();
       toast({
         title: "Success!",
-        description: "Book has been returned successfully.",
+        description: "You have removed the musician successfully.",
         variant: "default",
       });
     } catch (error) {
-      console.error("Failed to return book:", error);
+      console.error("Failed to remove musician:", error);
       toast({
         title: "Error",
         description:
-          error.data?.message || "Failed to return book. Please try again.",
+          error.data?.message || "Failed to remove musician. Please try again.",
         variant: "destructive",
       });
     }
@@ -92,29 +96,29 @@ const Account = () => {
               </div>
 
               <div>
-                <h3 className="text-lg font-semibold">Checked Out Books</h3>
-                {userData?.books && userData.books.length > 0 ? (
+                <h3 className="text-lg font-semibold">Added Musicians</h3>
+                {userData?.musicians && userData.musicians.length > 0 ? (
                   <ul className="space-y-2">
-                    {userData.books.map((book) => (
-                      <li key={book.id} className="border-b pb-2">
-                        <p className="font-medium">{book.title}</p>
+                    {userData.musicians.map((musician) => (
+                      <li key={musician.id} className="border-b pb-2">
+                        <p className="font-medium">{musician.name}</p>
                         <p className="text-sm text-gray-600">
-                          by {book.author}
+                          Genre: {musician.genre}
                         </p>
                         <Button
-                          onClick={() => handleReturnBook(book.id)}
+                          onClick={() => handleDeleteMusician(musician.id)}
                           variant="outline"
                           size="sm"
                           className="mt-2"
                         >
-                          Return Book
+                          Unadd Musician
                         </Button>
                       </li>
                     ))}
                   </ul>
                 ) : (
                   <p className="text-gray-600">
-                    No books currently checked out.
+                    You haven't added any musicians.
                   </p>
                 )}
               </div>
