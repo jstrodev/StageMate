@@ -4,7 +4,8 @@ const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const app = express();
-
+const cors = require("cors");
+app.use(cors({origin:["http://127.0.0.1:5173"]}));
 app.use(express.json());
 
 const verifyToken = (req, res, next) => {
