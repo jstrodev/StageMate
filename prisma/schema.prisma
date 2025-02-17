@@ -9,30 +9,32 @@ datasource db {
 
 model User {
   id        String     @id @default(uuid())
+  email     String     @unique
+  password  String
   firstName String
   lastName  String
-  email     String     @unique
   venueName String
-  password  String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   prospects Prospect[]
 }
 
 model Musician {
   id                   String     @id @default(uuid())
-  actName              String
-  homebase             String
-  active               Boolean
-  genre                String
-  averageTicketPrice   Decimal    @db.Decimal(10, 2)
+  actName             String
+  homebase            String
+  active              Boolean
+  genre               String
+  averageTicketPrice  Decimal    @db.Decimal(10, 2)
   averageVenueCapacity Int
-  lastThreeVenues      Json
-  agent                String
-  agentEmail           String
-  agentPhone           String
-  agency               String
-  createdAt            DateTime   @default(now())
-  updatedAt            DateTime   @updatedAt
-  prospects            Prospect[]
+  lastThreeVenues     Json
+  agent               String
+  agentEmail          String
+  agentPhone          String
+  agency              String
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  prospects           Prospect[]
 }
 
 model Prospect {

@@ -1,66 +1,78 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-export const musicianApi = createApi({
-  reducerPath: "musicianApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "https://fsa-book-buddy-b6e748d1380d.herokuapp.com/api", // Change to local host for testing and then render
-    prepareHeaders: (headers) => {
-      const token = localStorage.getItem("token"); // If you're using token auth
-      if (token) {
-        headers.set("authorization", `Bearer ${token}`);
-      }
-      return headers;
+// Async thunk for fetching all musicians
+export const fetchMusicians = createAsyncThunk(
+  "musicians/fetchAll",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/musicians/all");
+      if (!response.ok) throw new Error("Failed to fetch musicians");
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+const initialState = {
+  musicians: [],
+  loading: false,
+  error: null,
+  filters: {
+    genre: null,
+    priceRange: null,
+    location: null,
+  },
+};
+
+const musicianSlice = createSlice({
+  name: "musicians",
+  initialState,
+  reducers: {
+    setGenreFilter: (state, action) => {
+      state.filters.genre = action.payload;
     },
-  }),
-  tagTypes: ["Musician", "Musicians"],
-  endpoints: (builder) => ({
-    getMusicians: builder.query({
-      query: () => "/musicians",
-      transformResponse: (response) => response.musicians,
-      providesTags: ["Musicians"],
-    }),
-    getBookById: builder.query({
-      query: (id) => `/musicians/${id}`,
-      transformResponse: (response) => response.musician,
-      providesTags: (result, error, id) => [{ type: "Musician", id }],
-    }),
-    updateBook: builder.mutation({
-      query: ({ musicianId, active }) => ({
-        url: `/musicians/${musicianId}`,
-        method: "PATCH",
-        body: { active },
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }),
-      invalidatesTags: (result, error, { musicianId }) => [
-        { type: "Musician", id: musicianId },
-        "Musicians",
-      ],
-    }),
-    removeReservation: builder.mutation({
-      query: (musicianId) => ({
-        url: `/musicians/${musicianId}`,
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }),
-      invalidatesTags: (result, error, musicianId) => [
-        { type: "Musician", id: musicianId },
-        "Musicians",
-      ],
-      transformResponse: (response) => response,
-      transformErrorResponse: (error) => error,
-    }),
-  }),
+    setPriceFilter: (state, action) => {
+      state.filters.priceRange = action.payload;
+    },
+    setLocationFilter: (state, action) => {
+      state.filters.location = action.payload;
+    },
+    clearFilters: (state) => {
+      state.filters = initialState.filters;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchMusicians.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMusicians.fulfilled, (state, action) => {
+        state.loading = false;
+        state.musicians = action.payload;
+      })
+      .addCase(fetchMusicians.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+  },
 });
 
+// Export actions
 export const {
-  useGetMusiciansQuery,
-  useGetMusicianByIdQuery,
-  useUpdateMusicianMutation,
-  useRemoveMusicianMutation,
-} = musicianApi;
+  setGenreFilter,
+  setPriceFilter,
+  setLocationFilter,
+  clearFilters,
+} = musicianSlice.actions;
+
+// Selectors
+export const selectAllMusicians = (state) => state.musicians.musicians;
+export const selectMusicianFilters = (state) => state.musicians.filters;
+export const selectMusicianLoading = (state) => state.musicians.loading;
+export const selectMusicianError = (state) => state.musicians.error;
+
+// Export reducer
+export default musicianSlice.reducer;

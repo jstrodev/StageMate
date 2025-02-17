@@ -9,18 +9,20 @@ const app = express();
 const cors = require("cors");
 
 // Update the CORS configuration to allow requests from your frontend
-app.use(cors({
-  origin: [
-    "http://localhost:5173",  // Default Vite port
-    "http://localhost:5174",  // Alternative Vite port
-    "http://localhost:5175",  // Your current Vite port
-    "http://127.0.0.1:5173", // Also allow localhost IP variants
-    "http://127.0.0.1:5174",
-    "http://127.0.0.1:5175"
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173", // Default Vite port
+      "http://localhost:5174", // Alternative Vite port
+      "http://localhost:5175", // Your current Vite port
+      "http://127.0.0.1:5173", // Also allow localhost IP variants
+      "http://127.0.0.1:5174",
+      "http://127.0.0.1:5175",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    credentials: true,
+  })
+);
 
 // This should be before your routes
 app.use(express.json());
@@ -43,23 +45,37 @@ const verifyToken = (req, res, next) => {
 };
 
 app.post("/api/users/register", async (req, res, next) => {
+  console.log("Registration request body:", req.body);
   const { email, firstName, lastName, password, venueName } = req.body;
 
-  if (!email) {
-    return res.status(400).json({ message: "Email is required" });
+  // Validate required fields
+  if (!email || !firstName || !lastName || !password || !venueName) {
+    return res.status(400).json({
+      message: "All fields are required",
+      missing: {
+        email: !email,
+        firstName: !firstName,
+        lastName: !lastName,
+        password: !password,
+        venueName: !venueName,
+      },
+    });
   }
 
   try {
-    // Check if email is already in use
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+    // Check if email already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
     if (existingUser) {
       return res.status(400).json({ message: "Email already in use" });
     }
 
     // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 5);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Save user to the database
+    // Create new user
     const newUser = await prisma.user.create({
       data: {
         email,
@@ -68,25 +84,33 @@ app.post("/api/users/register", async (req, res, next) => {
         password: hashedPassword,
         venueName,
       },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        venueName: true,
+      },
     });
 
-    // Create a JSON Web Token (JWT)
-    const token = jwt.sign(
-      { id: newUser.id, email: newUser.email },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "24h",
-      }
-    );
+    console.log("User created successfully:", newUser);
 
-    // Return success response
     res.status(201).json({
       message: "User registered successfully",
-      token,
+      user: newUser,
     });
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Registration error details:", {
+      message: error.message,
+      code: error.code,
+      meta: error.meta,
+      stack: error.stack,
+    });
+
+    res.status(500).json({
+      message: "Error registering user",
+      error: error.message,
+    });
   }
 });
 
@@ -250,6 +274,22 @@ app.post("/api/users/logout", (req, res) => {
   res.status(200).json({ message: "Logged out successfully" });
 });
 
-app.listen(3000, () => {
-  console.log("I am listening on port 3000");
+const PORT = process.env.PORT || 3000;
+
+// Add this at the bottom of server.js
+const server = app.listen(PORT, (error) => {
+  if (error) {
+    console.error("Error starting server:", error);
+    process.exit(1);
+  }
+  console.log(`Server is running on port ${PORT}`);
+});
+
+// Add graceful shutdown
+process.on("SIGTERM", () => {
+  console.info("SIGTERM signal received.");
+  server.close(() => {
+    console.log("Server closed.");
+    process.exit(0);
+  });
 });

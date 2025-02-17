@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { endpoints } from "../../config/api";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ const LoginForm = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:3000/api/users/login", {
+      const response = await fetch(endpoints.login, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

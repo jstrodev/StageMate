@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import { endpoints } from "../../config/api";
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -13,8 +14,11 @@ const RegisterForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Log the form data being sent
+    console.log("Sending registration data:", formData);
+
     try {
-      const response = await fetch("http://localhost:3000/api/users/register", {
+      const response = await fetch(endpoints.register, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -25,6 +29,7 @@ const RegisterForm = () => {
       });
 
       const data = await response.json();
+      console.log("Registration response:", data);
 
       if (response.ok) {
         toast.success("Registration successful! Please login.");
