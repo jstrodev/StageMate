@@ -126,6 +126,17 @@ app.get("/api/users/all", verifyToken, async (req, res, next) => {
   }
 });
 
+app.get("/api/musicians/all", async (req, res, next) => {
+  try {
+    const musicians = await prisma.musician.findMany({});
+
+    res.status(200).json(musicians);
+  } catch (error) {
+    console.error("Error fetching musicians:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 //Endpoint to get a single user
 app.get("/api/users/:id", verifyToken, async (req, res, next) => {
   try {
