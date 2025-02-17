@@ -1,43 +1,20 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useSelector } from "react-redux";
-import RequireAuth from "./components/Authentication/RequireAuth";
-import Account from "./components/Account/AccountPage";
-import Login from "./components/Authentication/Login";
-import SingleBook from "./components/SingleBook"; // TODO: Change to SingleMusician
-import HomePage from "./pages/HomePage";
-import Register from "./components/Authentication/Register";
-import NotFound from "./pages/NotFound";
-import Navigation from "./components/Navigation";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "sonner";
+import AuthPage from "./pages/auth/AuthPage";
 
 function App() {
-  const token = useSelector((state) => state?.auth?.token ?? null);
-
-  console.log("Current auth state:", { token });
-
   return (
-    <Router>
-      <Navigation />
+    <BrowserRouter>
+      <Toaster position="top-right" />
       <Routes>
         {/* Public routes */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/books/:id" element={<SingleBook />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-
-        {/* Protected routes */}
-        <Route
-          path="/account"
-          element={
-            <RequireAuth>
-              <Account />
-            </RequireAuth>
-          }
-        />
+        <Route path="/" element={<AuthPage />} />
+        <Route path="/auth" element={<AuthPage />} />
 
         {/* Catch all */}
-        <Route path="*" element={<NotFound />} />
+        <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
 

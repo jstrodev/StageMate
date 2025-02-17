@@ -8,7 +8,21 @@ const jwt = require("jsonwebtoken");
 const app = express();
 const cors = require("cors");
 
-app.use(cors({ origin: ["http://127.0.0.1:5173"] }));
+// Update the CORS configuration to allow requests from your frontend
+app.use(cors({
+  origin: [
+    "http://localhost:5173",  // Default Vite port
+    "http://localhost:5174",  // Alternative Vite port
+    "http://localhost:5175",  // Your current Vite port
+    "http://127.0.0.1:5173", // Also allow localhost IP variants
+    "http://127.0.0.1:5174",
+    "http://127.0.0.1:5175"
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  credentials: true
+}));
+
+// This should be before your routes
 app.use(express.json());
 
 const verifyToken = (req, res, next) => {
