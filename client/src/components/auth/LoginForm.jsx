@@ -35,6 +35,7 @@ const LoginForm = () => {
           setCredentials({
             token: data.token,
             user: {
+              id: data.id,
               firstName: data.firstName,
               lastName: data.lastName,
               email: data.email,

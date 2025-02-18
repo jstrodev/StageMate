@@ -10,6 +10,17 @@ const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
+  // Add effect to check auth state
+  useEffect(() => {
+    const savedUser = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+
+    if (!token || !savedUser) {
+      dispatch(clearCredentials());
+      navigate("/auth");
+    }
+  }, [dispatch, navigate]);
+
   // Handle clicking outside of dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -31,8 +42,9 @@ const Navbar = () => {
     navigate("/auth");
   };
 
-  // Add a fallback initial if user data is missing
+  // Ensure we have user data before accessing firstName
   const userInitial = user?.firstName?.[0]?.toUpperCase() || "?";
+  const displayName = user?.firstName || "Guest";
 
   return (
     <nav className="bg-white border-b h-16 px-4 flex items-center justify-between">
@@ -44,9 +56,7 @@ const Navbar = () => {
       </Link>
 
       <div className="flex items-center space-x-4">
-        <span className="text-gray-700">
-          Welcome, {user?.firstName || "Guest"}
-        </span>
+        <span className="text-gray-700">Welcome, {displayName}</span>
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}

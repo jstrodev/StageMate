@@ -145,6 +145,7 @@ app.post("/api/users/login", async (req, res, next) => {
 
     res.status(200).json({
       token,
+      id: user.id,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
@@ -287,6 +288,46 @@ app.put("/api/users/:id", verifyToken, async (req, res) => {
 
 app.post("/api/users/logout", (req, res) => {
   res.status(200).json({ message: "Logged out successfully" });
+});
+
+// Add new endpoint for creating prospects
+app.post("/api/prospects/add", verifyToken, async (req, res) => {
+  try {
+    const { musicianId } = req.body;
+    const userId = req.user.id;
+
+    // Check if prospect already exists
+    const existingProspect = await prisma.prospect.findFirst({
+      where: {
+        userId,
+        musicianId,
+      },
+    });
+
+    if (existingProspect) {
+      return res.status(400).json({ message: "Musician already in prospects" });
+    }
+
+    // Create new prospect
+    const prospect = await prisma.prospect.create({
+      data: {
+        userId,
+        musicianId,
+        status: "INTERESTED", // You can add different status types
+      },
+      include: {
+        musician: true,
+      },
+    });
+
+    res.status(201).json({
+      message: "Added to prospects successfully",
+      prospect,
+    });
+  } catch (error) {
+    console.error("Error adding prospect:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 const PORT = process.env.PORT || 3000;

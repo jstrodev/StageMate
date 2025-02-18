@@ -10,7 +10,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   token: localStorage.getItem("token"),
-  user: null,
+  user: JSON.parse(localStorage.getItem("user")) || null, // Parse user from localStorage
 };
 
 const authSlice = createSlice({
@@ -23,11 +23,13 @@ const authSlice = createSlice({
       state.token = token;
       state.user = user;
       localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
     },
     clearCredentials: (state) => {
       state.token = null;
       state.user = null;
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
     },
   },
 });

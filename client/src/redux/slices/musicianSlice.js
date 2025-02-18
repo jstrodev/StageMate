@@ -15,13 +15,43 @@ export const fetchMusicians = createAsyncThunk(
   }
 );
 
+// Async thunk for adding prospects
+export const addToProspects = createAsyncThunk(
+  "musicians/addToProspects",
+  async (musicianId, { rejectWithValue, getState }) => {
+    try {
+      const token = getState().auth.token;
+      const response = await fetch("http://localhost:3000/api/prospects/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ musicianId }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add musician to prospects");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const initialState = {
   musicians: [],
   loading: false,
   error: null,
   filters: {
     genre: null,
-    priceRange: null,
+    capacityRange: [0, 10000],
+    agent: null,
+    agency: null,
+    active: null,
     location: null,
   },
 };
@@ -55,6 +85,15 @@ const musicianSlice = createSlice({
       })
       .addCase(fetchMusicians.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(addToProspects.pending, (state, action) => {
+        // Optional: Add loading state for specific musician
+      })
+      .addCase(addToProspects.fulfilled, (state, action) => {
+        // Optional: Update UI state after successful addition
+      })
+      .addCase(addToProspects.rejected, (state, action) => {
         state.error = action.payload;
       });
   },
