@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { endpoints } from "../../config/api";
+import { setCredentials } from "../../redux/slices/authSlice";
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -27,9 +30,19 @@ const LoginForm = () => {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("token", data.token);
+        console.log("Login response data:", data);
+        dispatch(
+          setCredentials({
+            token: data.token,
+            user: {
+              firstName: data.firstName,
+              lastName: data.lastName,
+              email: data.email,
+            },
+          })
+        );
         toast.success("Login successful!");
-        navigate("/dashboard"); // Navigate to dashboard after login
+        navigate("/");
       } else {
         toast.error(data.message || "Login failed");
       }

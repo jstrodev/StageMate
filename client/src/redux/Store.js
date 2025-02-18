@@ -7,4 +7,8 @@ export const store = configureStore({
     auth: authReducer,
     musicians: musicianReducer,
   },
+  devTools: process.env.NODE_ENV !== "production",
 });
+
+// Add this to debug initial state
+console.log("Initial Redux State:", store.getState());
