@@ -117,28 +117,43 @@ app.post("/api/users/register", async (req, res, next) => {
 app.post("/api/users/login", async (req, res, next) => {
   const { email, password } = req.body;
   try {
-    const user = await prisma.user.findMany({
+    const user = await prisma.user.findUnique({
       where: { email },
     });
-    console.log(user);
-    const passwordCheck = await bcrypt.compare(password, user[0].password);
-    if (!passwordCheck) {
-      return res.status(401);
+
+    if (!user) {
+      return res.status(401).json({ message: "Invalid credentials" });
     }
+
+    const passwordCheck = await bcrypt.compare(password, user.password);
+    if (!passwordCheck) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
     const token = jwt.sign(
       {
-        id: user[0].id,
-        email: user[0].email,
-        firstName: user[0].firstName,
-        lastName: user[0].lastName,
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
       },
       process.env.JWT_SECRET,
       {
         expiresIn: "24h",
       }
     );
-    res.status(201).json({ token, message: "login successful" });
-  } catch (error) {}
+
+    res.status(200).json({
+      token,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      message: "Login successful",
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 app.get("/api/users/aboutMe", verifyToken, async (req, res, next) => {
