@@ -15,22 +15,27 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Submitting login with:", formData);
 
     try {
       const response = await fetch(endpoints.login, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
         },
         credentials: "include",
         body: JSON.stringify(formData),
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Login failed");
+      }
+
       const data = await response.json();
+      console.log("Login response:", data);
 
       if (response.ok) {
-        console.log("Login response data:", data);
         dispatch(
           setCredentials({
             token: data.token,
@@ -44,12 +49,10 @@ const LoginForm = () => {
         );
         toast.success("Login successful!");
         navigate("/");
-      } else {
-        toast.error(data.message || "Login failed");
       }
     } catch (error) {
-      console.error("Login error:", error);
-      toast.error("An error occurred during login");
+      console.error("Login error details:", error);
+      toast.error(error.message || "An error occurred during login");
     }
   };
 

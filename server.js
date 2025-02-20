@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const app = express();
 const cors = require("cors");
 
-// Update the CORS configuration to allow requests from your frontend
+// Update the CORS configuration to allow requests from frontend
 app.use(
   cors({
     origin: [
@@ -115,17 +115,23 @@ app.post("/api/users/register", async (req, res, next) => {
 });
 
 app.post("/api/users/login", async (req, res, next) => {
+  console.log("Login attempt received:", { email: req.body.email }); // Log login attempt
+
   const { email, password } = req.body;
   try {
     const user = await prisma.user.findUnique({
       where: { email },
     });
 
+    console.log("User found:", user ? "yes" : "no"); // Log if user was found
+
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const passwordCheck = await bcrypt.compare(password, user.password);
+    console.log("Password check:", passwordCheck ? "passed" : "failed"); // Log password check result
+
     if (!passwordCheck) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -142,6 +148,8 @@ app.post("/api/users/login", async (req, res, next) => {
         expiresIn: "24h",
       }
     );
+
+    console.log("Login successful for:", user.email); // Log successful login
 
     res.status(200).json({
       token,
@@ -330,22 +338,58 @@ app.post("/api/prospects/add", verifyToken, async (req, res) => {
   }
 });
 
+// Add a basic health check endpoint
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
+// API test endpoint
+app.get("/api/test", async (req, res) => {
+  try {
+    // Try to query the database
+    const userCount = await prisma.user.count();
+    res.json({
+      status: "ok",
+      message: "Server and database are working",
+      userCount,
+    });
+  } catch (error) {
+    console.error("Database test failed:", error);
+    res.status(500).json({
+      status: "error",
+      message: "Database connection failed",
+    });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 
-// Add this at the bottom of server.js
-const server = app.listen(PORT, (error) => {
-  if (error) {
-    console.error("Error starting server:", error);
-    process.exit(1);
-  }
-  console.log(`Server is running on port ${PORT}`);
-});
+// Add error handling for database connection
+prisma
+  .$connect()
+  .then(() => {
+    console.log("Database connected successfully");
 
-// Add graceful shutdown
-process.on("SIGTERM", () => {
-  console.info("SIGTERM signal received.");
-  server.close(() => {
-    console.log("Server closed.");
-    process.exit(0);
+    const server = app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
+
+    server.on("error", (error) => {
+      console.error("Server error:", error);
+      process.exit(1);
+    });
+
+    // Graceful shutdown
+    process.on("SIGTERM", () => {
+      console.log("SIGTERM received. Shutting down gracefully...");
+      server.close(async () => {
+        await prisma.$disconnect();
+        console.log("Server closed");
+        process.exit(0);
+      });
+    });
+  })
+  .catch((error) => {
+    console.error("Failed to connect to database:", error);
+    process.exit(1);
   });
-});
