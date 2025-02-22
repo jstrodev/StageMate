@@ -18,9 +18,9 @@
 
 ## User Stories:
 
-- As a venue, I want to search for artists by relevant information to find suitable talent faster, so that I can book shows for my patrons.
-- As a venue, I want to manage my prospective artist leads in one place, so that I can operate more efficiently.
-- As a venue, I want to view my booked shows on a calendar, so that I can manage bookings more easily.
+- As a user, I want to search for artists by relevant information to find suitable talent faster, so that I can book shows for my patrons.
+- As a user, I want to manage my prospective artist leads in one place, so that I can operate more efficiently.
+- As a user, I want the ability to filter prospects by status and decision.
 
 ## User Experience:
 
