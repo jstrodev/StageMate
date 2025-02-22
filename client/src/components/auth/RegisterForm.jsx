@@ -1,8 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { endpoints } from "../../config/api";
+import { setCredentials } from "../../redux/slices/authSlice";
 
 const RegisterForm = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -14,17 +19,12 @@ const RegisterForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Log the form data being sent
-    console.log("Sending registration data:", formData);
-
     try {
       const response = await fetch(endpoints.register, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
         },
-        credentials: "include",
         body: JSON.stringify(formData),
       });
 
@@ -32,7 +32,21 @@ const RegisterForm = () => {
       console.log("Registration response:", data);
 
       if (response.ok) {
-        toast.success("Registration successful! Please login.");
+        dispatch(
+          setCredentials({
+            token: data.token,
+            user: {
+              id: data.user.id,
+              firstName: data.user.firstName,
+              lastName: data.user.lastName,
+              email: data.user.email,
+              venueName: data.user.venueName,
+            },
+          })
+        );
+
+        toast.success("Registration successful!");
+        navigate("/", { replace: true });
       } else {
         toast.error(data.message || "Registration failed");
       }

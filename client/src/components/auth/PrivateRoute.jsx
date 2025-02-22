@@ -1,14 +1,22 @@
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import PropTypes from "prop-types";
 
 const PrivateRoute = ({ children }) => {
-  const token = useSelector((state) => state.auth.token);
+  const auth = useSelector((state) => state.auth);
 
-  if (!token) {
+  console.log("Auth state in PrivateRoute:", auth);
+
+  if (!auth.token || !auth.user?.id) {
+    console.log("Redirecting to auth - missing credentials");
     return <Navigate to="/auth" replace />;
   }
 
   return children;
 };
 
-export default PrivateRoute; 
+PrivateRoute.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
+export default PrivateRoute;
