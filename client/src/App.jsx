@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
 import Layout from "./components/layout/Layout";
-import AuthPage from "./pages/auth/AuthPage";
+import AuthPage from "./pages/AuthPage";
 import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/SearchPage";
 import TalentBoardPage from "./pages/TalentBoardPage";

@@ -16,11 +16,13 @@ import {
 } from "@mui/material";
 import debounce from "lodash/debounce";
 import { toast } from "sonner";
+import { addProspect, removeProspect } from "../redux/slices/prospectSlice";
 
 const SearchPage = () => {
   const dispatch = useDispatch();
   const musicians = useSelector(selectAllMusicians);
   const isLoading = useSelector(selectMusicianLoading);
+  const prospects = useSelector((state) => state.prospects.prospects);
 
   // State for pagination and filters
   const [currentPage, setCurrentPage] = useState(1);
@@ -73,16 +75,15 @@ const SearchPage = () => {
     setCurrentPage(1);
   }, 300);
 
-  const handleAddToProspects = async (musicianId) => {
-    try {
-      const resultAction = await dispatch(addToProspects(musicianId));
-      if (addToProspects.fulfilled.match(resultAction)) {
-        toast.success("Successfully added musician to prospect list");
-      } else {
-        toast.error("Failed to add to prospects");
-      }
-    } catch (error) {
-      toast.error("Error adding to prospects");
+  const handleProspectAction = (musician) => {
+    const isProspect = prospects.some((p) => p.id === musician.id);
+
+    if (isProspect) {
+      dispatch(removeProspect(musician.id));
+      toast.success("Removed from prospects");
+    } else {
+      dispatch(addProspect(musician));
+      toast.success("Added to prospects");
     }
   };
 
@@ -238,10 +239,16 @@ const SearchPage = () => {
                       </div>
                       <div className="mt-4 border-t pt-4">
                         <button
-                          onClick={() => handleAddToProspects(musician.id)}
-                          className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium shadow-sm"
+                          onClick={() => handleProspectAction(musician)}
+                          className={`w-full py-2 px-4 ${
+                            prospects.some((p) => p.id === musician.id)
+                              ? "bg-red-600 hover:bg-red-700"
+                              : "bg-blue-600 hover:bg-blue-700"
+                          } text-white rounded-md transition-colors font-medium shadow-sm`}
                         >
-                          Add to Prospects
+                          {prospects.some((p) => p.id === musician.id)
+                            ? "Remove Prospect"
+                            : "Add to Prospects"}
                         </button>
                       </div>
                     </div>
