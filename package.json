@@ -4,7 +4,8 @@
   "scripts": {
     "server": "node server.js",
     "client": "cd client && npm run dev",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
