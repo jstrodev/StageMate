@@ -8,44 +8,52 @@ const jwt = require("jsonwebtoken");
 const app = express();
 const cors = require("cors");
 
-// Update the CORS configuration to allow requests from frontend
+// Configure CORS to allow requests from frontend
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173", // Default Vite port
-      "http://localhost:5174", // Alternative Vite port
-      "http://localhost:5175", // Your current Vite port
-      "http://127.0.0.1:5173", // Also allow localhost IP variants
-      "http://127.0.0.1:5174",
-      "http://127.0.0.1:5175",
-    ],
+    origin: (origin, callback) => {
+      // Allow requests with no origin
+      if (!origin) return callback(null, true);
+
+      // Allow any localhost port in development
+      if (
+        origin.startsWith("http://localhost:") ||
+        origin.startsWith("http://127.0.0.1:")
+      ) {
+        return callback(null, true);
+      }
+
+      callback(new Error("Not allowed by CORS"));
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
   })
 );
 
-// This should be before your routes
+// Place this before routes
 app.use(express.json());
 
+// Middleware to verify JWT tokens
 const verifyToken = (req, res, next) => {
   const authHeaders = req.headers["authorization"];
   if (!authHeaders) {
-    return res.status(400).json("no auth headers present");
+    return res.status(400).json("No authorization headers present");
   }
-  console.log(authHeaders);
+  console.log("Authorization headers:", authHeaders);
   const token = authHeaders.split(" ")[1];
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
       return res.status(401).send({ message: "Unauthorized" });
     }
-    console.log("token verified!", decoded);
+    console.log("Token verified successfully");
     req.user = decoded;
     next();
   });
 };
 
 app.post("/api/users/register", async (req, res, next) => {
-  console.log("Registration request body:", req.body);
+  console.log("Processing registration request");
   const { email, firstName, lastName, password, venueName } = req.body;
 
   // Validate required fields
@@ -63,7 +71,7 @@ app.post("/api/users/register", async (req, res, next) => {
   }
 
   try {
-    // Check if email already exists
+    // Check for existing email in database
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
@@ -72,10 +80,10 @@ app.post("/api/users/register", async (req, res, next) => {
       return res.status(400).json({ message: "Email already in use" });
     }
 
-    // Hash the password
+    // Hash password for security
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user
+    // Create user record in database
     const newUser = await prisma.user.create({
       data: {
         email,
@@ -93,14 +101,35 @@ app.post("/api/users/register", async (req, res, next) => {
       },
     });
 
-    console.log("User created successfully:", newUser);
+    console.log("New user created successfully");
+
+    // Generate authentication token
+    const token = jwt.sign(
+      {
+        id: newUser.id,
+        email: newUser.email,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "24h",
+      }
+    );
 
     res.status(201).json({
       message: "User registered successfully",
-      user: newUser,
+      token,
+      user: {
+        id: newUser.id,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        email: newUser.email,
+        venueName: newUser.venueName,
+      },
     });
   } catch (error) {
-    console.error("Registration error details:", {
+    console.error("Registration error:", {
       message: error.message,
       code: error.code,
       meta: error.meta,

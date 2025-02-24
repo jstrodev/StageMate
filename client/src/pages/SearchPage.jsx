@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom"; // new
+
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -16,11 +18,14 @@ import {
 } from "@mui/material";
 import debounce from "lodash/debounce";
 import { toast } from "sonner";
+import { addProspect, removeProspect } from "../redux/slices/prospectSlice";
 
 const SearchPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // new
   const musicians = useSelector(selectAllMusicians);
   const isLoading = useSelector(selectMusicianLoading);
+  const prospects = useSelector((state) => state.prospects.prospects);
 
   // State for pagination and filters
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,11 +39,14 @@ const SearchPage = () => {
     active: "",
   });
   const musiciansPerPage = 12;
+  const pageLimit = 5; // Number of page buttons to show at a time
 
   // Fetch musicians on component mount
   useEffect(() => {
     dispatch(fetchMusicians());
+    console.log(musicians);
   }, [dispatch]);
+
 
   // Filter musicians based on search criteria
   const filteredMusicians = musicians.filter((musician) => {
@@ -73,17 +81,29 @@ const SearchPage = () => {
     setCurrentPage(1);
   }, 300);
 
-  const handleAddToProspects = async (musicianId) => {
-    try {
-      const resultAction = await dispatch(addToProspects(musicianId));
-      if (addToProspects.fulfilled.match(resultAction)) {
-        toast.success("Successfully added musician to prospect list");
-      } else {
-        toast.error("Failed to add to prospects");
-      }
-    } catch (error) {
-      toast.error("Error adding to prospects");
+  const handleProspectAction = (musician) => {
+    const isProspect = prospects.some((p) => p.id === musician.id);
+
+    if (isProspect) {
+      dispatch(removeProspect(musician.id));
+      toast.success("Removed from prospects");
+    } else {
+      dispatch(addProspect(musician));
+      toast.success("Added to prospects");
+
+      // redirect 
+      navigate("/talent-board");
     }
+  };
+
+  const getPageNumbers = () => {
+    const startPage = Math.max(1, currentPage - Math.floor(pageLimit / 2));
+    const endPage = Math.min(totalPages, startPage + pageLimit - 1);
+    const pages = [];
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    return pages;
   };
 
   return (
@@ -238,10 +258,16 @@ const SearchPage = () => {
                       </div>
                       <div className="mt-4 border-t pt-4">
                         <button
-                          onClick={() => handleAddToProspects(musician.id)}
-                          className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium shadow-sm"
+                          onClick={() => handleProspectAction(musician)}
+                          className={`w-full py-2 px-4 ${
+                            prospects.some((p) => p.id === musician.id)
+                              ? "bg-red-600 hover:bg-red-700"
+                              : "bg-blue-600 hover:bg-blue-700"
+                          } text-white rounded-md transition-colors font-medium shadow-sm`}
                         >
-                          Add to Prospects
+                          {prospects.some((p) => p.id === musician.id)
+                            ? "Remove Prospect"
+                            : "Add to Prospects"}
                         </button>
                       </div>
                     </div>
@@ -251,19 +277,35 @@ const SearchPage = () => {
 
               {/* Pagination */}
               <div className="flex justify-center mt-8 space-x-2">
-                {[...Array(totalPages)].map((_, index) => (
+                {currentPage > 1 && (
                   <button
-                    key={index}
-                    onClick={() => setCurrentPage(index + 1)}
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                    className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  >
+                    Previous
+                  </button>
+                )}
+                {getPageNumbers().map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
                     className={`px-4 py-2 rounded ${
-                      currentPage === index + 1
+                      currentPage === page
                         ? "bg-blue-500 text-white"
                         : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                     }`}
                   >
-                    {index + 1}
+                    {page}
                   </button>
                 ))}
+                {currentPage < totalPages && (
+                  <button
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  >
+                    Next
+                  </button>
+                )}
               </div>
             </>
           )}
