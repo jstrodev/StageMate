@@ -6,13 +6,13 @@ const Sidebar = () => {
       <nav className="p-4 space-y-2">
         <Link
           to="/search"
-          className="block px-4 py-2 text-gray-700 hover:bg-primary-DEFAULT hover:text-white rounded-md"
+          className="block px-4 py-2 text-gray-700 hover:bg-primary-DEFAULT hover:text-blue-500 rounded-md"
         >
           Artist Search
         </Link>
         <Link
           to="/talent-board"
-          className="block px-4 py-2 text-gray-700 hover:bg-primary-DEFAULT hover:text-white rounded-md"
+          className="block px-4 py-2 text-gray-700 hover:bg-primary-DEFAULT hover:text-blue-500 rounded-md"
         >
           Talent Board
         </Link>
