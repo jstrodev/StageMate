@@ -13,14 +13,20 @@ describe("Musician Endpoints", () => {
     });
   });
 
-  describe("POST /api/musicians/register", () => {
+  describe("POST /api/users/register", () => {
     it("should register a new musician and return the created musician object", async () => {
-      const newMusician = { name: "John Doe", instrument: "Guitar", genre: "Rock" };
+      const newMusician = {
+        email: "email3@email.com",
+        firstName: "Janet",
+        lastName: "Doe",
+        password: "password",
+        venueName: "venueName",
+      };
       const response = await request(app)
-        .post("/api/musicians/register")
+        .post("/api/users/register")
         .send(newMusician);
       expect(response.statusCode).toBe(201); // assuming 201 Created
-      expect(response.body).toHaveProperty("id");
+      expect(response.body.user).toHaveProperty("id");
       expect(response.body.name).toBe(newMusician.name);
     });
   });
