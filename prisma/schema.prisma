@@ -40,12 +40,12 @@ model Musician {
 model Prospect {
   id         String   @id @default(uuid())
   userId     String
-  musicianId String
-  status     String
+  musicianId String   @unique
+  status     String   @default("INTERESTED") // ✅ Default value for status
   notes      String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  musician   Musician @relation(fields: [musicianId], references: [id])
+  musician   Musician @relation(fields: [musicianId], references: [id], onDelete: Cascade)
   user       User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, musicianId])

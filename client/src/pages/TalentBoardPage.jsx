@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom"; // new
+
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -29,12 +31,17 @@ const DECISION_OPTIONS = [
 
 const TalentBoardPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // new
   const prospects = useSelector((state) => state.prospects.prospects);
   const filters = useSelector((state) => state.prospects.filters);
 
   const handleRemoveProspect = (prospectId) => {
     dispatch(removeProspect(prospectId));
     toast.success("Prospect removed");
+
+    // navigate 
+    navigate("/search");
+
   };
 
   const handleStatusChange = (prospectId, newStatus) => {
