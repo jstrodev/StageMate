@@ -37,7 +37,7 @@ CREATE TABLE "Prospect" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "musicianId" TEXT NOT NULL,
-    "status" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'INTERESTED',
     "notes" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -49,10 +49,13 @@ CREATE TABLE "Prospect" (
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Prospect_musicianId_key" ON "Prospect"("musicianId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Prospect_userId_musicianId_key" ON "Prospect"("userId", "musicianId");
 
 -- AddForeignKey
-ALTER TABLE "Prospect" ADD CONSTRAINT "Prospect_musicianId_fkey" FOREIGN KEY ("musicianId") REFERENCES "Musician"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Prospect" ADD CONSTRAINT "Prospect_musicianId_fkey" FOREIGN KEY ("musicianId") REFERENCES "Musician"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Prospect" ADD CONSTRAINT "Prospect_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

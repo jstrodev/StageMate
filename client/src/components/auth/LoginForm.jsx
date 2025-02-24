@@ -27,29 +27,34 @@ const LoginForm = () => {
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Login failed");
+      let data;
+      const contentType = response.headers.get("content-type");
+
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        data = { message: "Unexpected response from server" };
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+
       console.log("Login response:", data);
 
-      if (response.ok) {
-        dispatch(
-          setCredentials({
-            token: data.token,
-            user: {
-              id: data.id,
-              firstName: data.firstName,
-              lastName: data.lastName,
-              email: data.email,
-            },
-          })
-        );
-        toast.success("Login successful!");
-        navigate("/");
-      }
+      dispatch(
+        setCredentials({
+          token: data.token,
+          user: {
+            id: data.id,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
+          },
+        })
+      );
+      toast.success("Login successful!");
+      navigate("/");
     } catch (error) {
       console.error("Login error details:", error);
       toast.error(error.message || "An error occurred during login");
@@ -109,3 +114,5 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
+
+

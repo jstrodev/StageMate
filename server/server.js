@@ -71,6 +71,7 @@ app.post("/api/users/register", async (req, res, next) => {
 app.post("/api/users/login", async (req, res, next) => {
   const { email, password } = req.body;
   try {
+    console.log("test")
     const user = await prisma.user.findMany({
       where: { email },
     });
@@ -102,7 +103,6 @@ app.get("/api/users/aboutMe", verifyToken, async (req, res, next) => {
     lastName: req.user.lastName,
     email: req.user.email,
   });
-});
 
 //Endpoint to get all users
 app.get("/api/users/all", verifyToken, async (req, res, next) => {

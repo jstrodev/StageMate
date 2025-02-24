@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom"; // new
+
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -20,6 +22,7 @@ import { addProspect, removeProspect } from "../redux/slices/prospectSlice";
 
 const SearchPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // new
   const musicians = useSelector(selectAllMusicians);
   const isLoading = useSelector(selectMusicianLoading);
   const prospects = useSelector((state) => state.prospects.prospects);
@@ -40,7 +43,9 @@ const SearchPage = () => {
   // Fetch musicians on component mount
   useEffect(() => {
     dispatch(fetchMusicians());
+    console.log(musicians);
   }, [dispatch]);
+
 
   // Filter musicians based on search criteria
   const filteredMusicians = musicians.filter((musician) => {
@@ -84,6 +89,9 @@ const SearchPage = () => {
     } else {
       dispatch(addProspect(musician));
       toast.success("Added to prospects");
+
+      // redirect 
+      navigate("/talent-board");
     }
   };
 
