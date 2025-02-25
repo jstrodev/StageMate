@@ -45,12 +45,12 @@ const Navbar = () => {
   return (
     <nav className="bg-white border-b h-16 px-4 flex items-center justify-between">
       <Link to="/" className="flex items-center space-x-2">
-        <img src="/logo.svg" alt="StageMate" className="h-8 w-8" />
+        <img src="/StageMate.png" alt="StageMate" className="h-8 w-8" />
         <span className="text-xl font-bold text-primary-DEFAULT">
           StageMate
         </span>
       </Link>
-
+      {/*s */}
       <div className="flex items-center space-x-4">
         <span className="text-gray-700">Welcome, {displayName}</span>
         <div className="relative" ref={dropdownRef}>
@@ -71,7 +71,7 @@ const Navbar = () => {
               >
                 Settings
               </Link>
-              
+
               <button
                 onClick={handleLogout}
                 className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"

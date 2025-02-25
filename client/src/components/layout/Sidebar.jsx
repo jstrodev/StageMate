@@ -16,6 +16,12 @@ const Sidebar = () => {
         >
           Talent Board
         </Link>
+        <Link
+          to="/calendar"
+          className="block px-4 py-2 text-gray-700 hover:bg-primary-DEFAULT hover:text-blue-500 rounded-md"
+        >
+          Calendar
+        </Link>
       </nav>
     </aside>
   );

@@ -7,6 +7,7 @@ import SearchPage from "./pages/SearchPage";
 import TalentBoardPage from "./pages/TalentBoardPage";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import SettingsPage from "./pages/SettingsPage"; // Import SettingsPage
+import CalendarPage from "./pages/CalendarPage";
 
 function App() {
   return (
@@ -53,6 +54,16 @@ function App() {
             <PrivateRoute>
               <Layout>
                 <SettingsPage />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/calendar"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <CalendarPage />
               </Layout>
             </PrivateRoute>
           }
