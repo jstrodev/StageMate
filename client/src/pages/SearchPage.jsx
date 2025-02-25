@@ -39,7 +39,6 @@ const SearchPage = () => {
     active: "",
   });
   const musiciansPerPage = 12;
-  const pageLimit = 5; // Number of page buttons to show at a time
 
   // Fetch musicians on component mount
   useEffect(() => {
@@ -94,16 +93,6 @@ const SearchPage = () => {
       // redirect 
       navigate("/talent-board");
     }
-  };
-
-  const getPageNumbers = () => {
-    const startPage = Math.max(1, currentPage - Math.floor(pageLimit / 2));
-    const endPage = Math.min(totalPages, startPage + pageLimit - 1);
-    const pages = [];
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i);
-    }
-    return pages;
   };
 
   return (
@@ -277,35 +266,19 @@ const SearchPage = () => {
 
               {/* Pagination */}
               <div className="flex justify-center mt-8 space-x-2">
-                {currentPage > 1 && (
+                {[...Array(totalPages)].map((_, index) => (
                   <button
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
-                  >
-                    Previous
-                  </button>
-                )}
-                {getPageNumbers().map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
+                    key={index}
+                    onClick={() => setCurrentPage(index + 1)}
                     className={`px-4 py-2 rounded ${
-                      currentPage === page
+                      currentPage === index + 1
                         ? "bg-blue-500 text-white"
                         : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                     }`}
                   >
-                    {page}
+                    {index + 1}
                   </button>
                 ))}
-                {currentPage < totalPages && (
-                  <button
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
-                  >
-                    Next
-                  </button>
-                )}
               </div>
             </>
           )}

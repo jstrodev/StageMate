@@ -193,6 +193,52 @@ app.post("/api/users/login", async (req, res, next) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+app.put("/api/users/update", verifyToken, async (req, res) => {
+  try {
+    console.log("Received update request:", req.body); // ✅ Log incoming request
+    const userIdFromToken = req.user.id; // ✅ Get user ID from token
+    console.log("User ID from token:", userIdFromToken);
+
+    const { firstName, lastName, email, password } = req.body;
+
+    // Fetch the existing user
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userIdFromToken },
+    });
+
+    if (!existingUser) {
+      console.log("User not found in database"); // ✅ Log missing user
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    console.log("Updating user:", existingUser.id); // ✅ Log user ID
+
+    // Build update object
+    const updateData = {};
+    if (firstName) updateData.firstName = firstName;
+    if (lastName) updateData.lastName = lastName;
+    if (email) updateData.email = email;
+    if (password) {
+      updateData.password = await bcrypt.hash(password, 10);
+    }
+
+    console.log("Updating with data:", updateData); // ✅ Log update data
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userIdFromToken }, // ✅ Match user by ID from token
+      data: updateData,
+      select: { id: true, firstName: true, lastName: true, email: true },
+    });
+
+    console.log("Update successful:", updatedUser); // ✅ Log successful update
+    res
+      .status(200)
+      .json({ message: "Profile updated successfully", user: updatedUser });
+  } catch (error) {
+    console.error("Error updating user:", error); // ✅ Log detailed error
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
 
 app.get("/api/users/aboutMe", verifyToken, async (req, res, next) => {
   console.log(req.user);

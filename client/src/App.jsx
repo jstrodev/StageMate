@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/SearchPage";
 import TalentBoardPage from "./pages/TalentBoardPage";
 import PrivateRoute from "./components/auth/PrivateRoute";
+import SettingsPage from "./pages/SettingsPage"; // Import SettingsPage
 
 function App() {
   return (
@@ -42,6 +43,16 @@ function App() {
             <PrivateRoute>
               <Layout>
                 <TalentBoardPage />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/settings" // Add Settings Route
+          element={
+            <PrivateRoute>
+              <Layout>
+                <SettingsPage />
               </Layout>
             </PrivateRoute>
           }
