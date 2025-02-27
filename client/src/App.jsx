@@ -8,6 +8,7 @@ import TalentBoardPage from "./pages/TalentBoardPage";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import SettingsPage from "./pages/SettingsPage"; // Import SettingsPage
 import CalendarPage from "./pages/CalendarPage";
+import LandingPage from "./pages/LandingPage"; // Import LandingPage
 
 function App() {
   return (
@@ -16,10 +17,11 @@ function App() {
       <Routes>
         {/* Public routes */}
         <Route path="/auth" element={<AuthPage />} />
+        <Route path="/" element={<LandingPage />} /> {/* Add LandingPage route */}
 
         {/* Protected routes with layout */}
         <Route
-          path="/"
+          path="/home"
           element={
             <PrivateRoute>
               <Layout>
@@ -49,7 +51,7 @@ function App() {
           }
         />
         <Route
-          path="/settings" // Add Settings Route
+          path="/settings"
           element={
             <PrivateRoute>
               <Layout>
@@ -68,9 +70,6 @@ function App() {
             </PrivateRoute>
           }
         />
-
-        {/* Catch all */}
-        <Route path="*" element={<div>404 Not Found</div>} />
       </Routes>
     </BrowserRouter>
   );
