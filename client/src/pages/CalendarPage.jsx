@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   startOfMonth,
   endOfMonth,
@@ -52,117 +52,69 @@ const CalendarPage = () => {
   };
 
   const handleDeleteEvent = (eventId, actName) => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete the event for ${actName}?`
-      )
-    ) {
+    if (window.confirm(`Are you sure you want to delete the event for ${actName}?`)) {
       dispatch(removeEvent(eventId));
       toast.success("Event deleted successfully");
     }
   };
 
   const getEventsForDate = (date) => {
-    return events.filter((event) =>
-      isSameDay(parseISO(event.date.toISOString()), date)
-    );
+    return events.filter((event) => isSameDay(parseISO(event.date.toISOString()), date));
   };
 
   return (
     <div className="flex flex-col h-full bg-white rounded-lg shadow">
-      {/* Calendar Header */}
       <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center gap-4">
-          <h2 className="text-lg font-medium">
-            {format(currentMonth, "MMMM yyyy")}
-          </h2>
+          <h2 className="text-lg font-medium">{format(currentMonth, "MMMM yyyy")}</h2>
           <div className="flex items-center gap-2">
-            <button
-              className="p-1 hover:bg-gray-100 rounded"
-              onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-            >
+            <button className="p-1 hover:bg-gray-100 rounded" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
               <ChevronLeft className="h-4 w-4" />
             </button>
-            <button
-              className="p-1 hover:bg-gray-100 rounded"
-              onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-            >
+            <button className="p-1 hover:bg-gray-100 rounded" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
         </div>
-        <button
-          className="flex items-center px-3 py-1 text-sm border rounded hover:bg-gray-50"
-          onClick={() => {
-            const today = new Date();
-            setSelectedDate(today);
-            setCurrentMonth(today);
-          }}
-        >
+        <button className="flex items-center px-3 py-1 text-sm border rounded hover:bg-gray-50" onClick={() => {
+          const today = new Date();
+          setSelectedDate(today);
+          setCurrentMonth(today);
+        }}>
           <CalendarDays className="h-4 w-4 mr-2" />
           Today
         </button>
       </div>
 
-      {/* Calendar Grid */}
       <div className="flex-1 flex flex-col">
-        {/* Weekday Headers */}
         <div className="grid grid-cols-7">
           {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-            <div
-              key={day}
-              className="text-center font-medium text-sm border-b border-r last:border-r-0 h-8 flex items-center justify-center"
-            >
+            <div key={day} className="text-center font-medium text-sm border-b border-r last:border-r-0 h-8 flex items-center justify-center">
               {day}
             </div>
           ))}
         </div>
 
-        {/* Calendar Days */}
         <div className="flex-1 grid grid-cols-7 grid-rows-6">
           {daysInMonth.map((date) => {
             const dayEvents = getEventsForDate(date);
 
             return (
-              <div
-                key={date.toISOString()}
-                className={`border-b border-r last:border-r-0 px-2 py-1 flex flex-col relative group min-h-[100px] ${
-                  !isSameMonth(date, currentMonth) ? "bg-gray-50" : ""
-                } ${isSameDay(date, selectedDate) ? "bg-blue-50" : ""}`}
-              >
-                {/* Day Number */}
+              <div key={date.toISOString()} className={`border-b border-r last:border-r-0 px-2 py-1 flex flex-col relative group min-h-[100px] ${!isSameMonth(date, currentMonth) ? "bg-gray-50" : ""} ${isSameDay(date, selectedDate) ? "bg-blue-50" : ""}`}>
                 <div className="flex justify-between items-center">
-                  <span
-                    className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-sm ${
-                      isSameDay(date, selectedDate)
-                        ? "bg-blue-500 text-white"
-                        : ""
-                    }`}
-                  >
+                  <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-sm ${isSameDay(date, selectedDate) ? "bg-blue-500 text-white" : ""}`}>
                     {format(date, "d")}
                   </span>
-                  <button
-                    className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-100 rounded"
-                    onClick={() => handleAddEvent(date)}
-                  >
+                  <button className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-100 rounded" onClick={() => handleAddEvent(date)}>
                     <Plus className="h-4 w-4" />
                   </button>
                 </div>
 
-                {/* Events */}
                 <div className="mt-1 space-y-1 overflow-y-auto">
                   {dayEvents.map((event) => (
-                    <div
-                      key={event.prospectId}
-                      className="text-xs p-1 rounded bg-blue-500/80 text-white group/event relative flex items-center justify-between"
-                    >
+                    <div key={event.prospectId} className="text-xs p-1 rounded bg-blue-500/80 text-white group/event relative flex items-center justify-between">
                       <span className="truncate">{event.actName}</span>
-                      <button
-                        onClick={() =>
-                          handleDeleteEvent(event.prospectId, event.actName)
-                        }
-                        className="opacity-0 group-hover/event:opacity-100 transition-opacity p-1 hover:bg-red-600 rounded"
-                      >
+                      <button onClick={() => handleDeleteEvent(event.prospectId, event.actName)} className="opacity-0 group-hover/event:opacity-100 transition-opacity p-1 hover:bg-red-600 rounded">
                         <X className="h-3 w-3" />
                       </button>
                     </div>
@@ -174,13 +126,7 @@ const CalendarPage = () => {
         </div>
       </div>
 
-      {/* Event Modal */}
-      <EventModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleSaveEvent}
-        selectedDate={modalDate}
-      />
+      <EventModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleSaveEvent} selectedDate={modalDate} />
     </div>
   );
 };
