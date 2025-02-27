@@ -33,7 +33,7 @@ const loadEvents = () => {
     return storedEvents
       ? JSON.parse(storedEvents).map(event => ({
           ...event,
-          date: new Date(event.date), // ✅ Convert back to Date object
+          date: new Date(event.date), // Convert back to Date object
         }))
       : [];
   } catch (error) {
@@ -55,7 +55,7 @@ const eventSlice = createSlice({
   name: "events",
   initialState: {
     events: loadEvents(), // Load events from localStorage when Redux initializes
-    refreshTrigger: 0, // ✅ NEW: Used to force UI updates
+    refreshTrigger: 0, // Used to force UI updates
   },
   reducers: {
     addEvent: (state, action) => {
@@ -65,13 +65,13 @@ const eventSlice = createSlice({
       if (!isDuplicate) {
         state.events.push(action.payload);
         saveEvents(state.events);
-        state.refreshTrigger += 1; // ✅ Force Calendar UI refresh
+        state.refreshTrigger += 1; // Force Calendar UI refresh
       }
     },
     removeEvent: (state, action) => {
       state.events = state.events.filter(event => event.prospectId !== action.payload);
       saveEvents(state.events);
-      state.refreshTrigger += 1; // ✅ Force Calendar UI refresh
+      state.refreshTrigger += 1; // Force Calendar UI refresh
     },
     updateEventDate: (state, action) => {  
       const { eventId, newDate } = action.payload;
@@ -79,7 +79,7 @@ const eventSlice = createSlice({
       if (event) {
         event.date = newDate;
         saveEvents(state.events);
-        state.refreshTrigger += 1; // ✅ Force Calendar UI refresh
+        state.refreshTrigger += 1; // Force Calendar UI refresh
       }
     },
   },
