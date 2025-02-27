@@ -89,6 +89,17 @@ body {
   padding-left: 56%;
 }
 
+.text-4xl.font-bold.mb-6 {
+  color: #73737d;
+  text-shadow: 2px 2px 4px rgb(114, 10, 242);
+
+}
+
+.text-lg.font-bold.mb-4 {
+  color: #4646de;
+  text-shadow: 2px 2px 4px rgb(242, 238, 10);
+
+}
 @media screen and (max-width: 600px) {
   .topnav .search-container {
     float: none;
