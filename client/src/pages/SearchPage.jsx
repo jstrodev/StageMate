@@ -26,7 +26,7 @@ const SearchPage = () => {
   const musicians = useSelector(selectAllMusicians);
   const isLoading = useSelector(selectMusicianLoading);
   const prospects = useSelector((state) => state.prospects.prospects);
-
+  
   // State for pagination and filters
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({
