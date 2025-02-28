@@ -54,7 +54,7 @@ const LoginForm = () => {
         })
       );
       toast.success("Login successful!");
-      navigate("/");
+      navigate("/home");
     } catch (error) {
       console.error("Login error details:", error);
       toast.error(error.message || "An error occurred during login");
@@ -114,5 +114,3 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
-
-

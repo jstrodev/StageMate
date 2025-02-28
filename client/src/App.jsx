@@ -8,18 +8,19 @@ import TalentBoardPage from "./pages/TalentBoardPage";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import SettingsPage from "./pages/SettingsPage"; // Import SettingsPage
 import CalendarPage from "./pages/CalendarPage";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
   return (
     <BrowserRouter>
       <Toaster position="top-right" />
       <Routes>
-        {/* Public routes */}
-        <Route path="/auth" element={<AuthPage />} />
+        {/* Add Landing Page as the root route */}
+        <Route path="/" element={<LandingPage />} />
 
-        {/* Protected routes with layout */}
+        {/* Move home route to /home */}
         <Route
-          path="/"
+          path="/home"
           element={
             <PrivateRoute>
               <Layout>
@@ -28,6 +29,11 @@ function App() {
             </PrivateRoute>
           }
         />
+
+        {/* Public routes */}
+        <Route path="/auth" element={<AuthPage />} />
+
+        {/* Protected routes with layout */}
         <Route
           path="/search"
           element={

@@ -46,7 +46,7 @@ const RegisterForm = () => {
         );
 
         toast.success("Registration successful!");
-        navigate("/", { replace: true });
+        navigate("/home", { replace: true });
       } else {
         toast.error(data.message || "Registration failed");
       }
