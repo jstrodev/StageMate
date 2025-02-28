@@ -13,7 +13,7 @@ const HomePage = () => {
             <h2 className="text-xl font-semibold mb-4">Quick Stats</h2>
             <div className="grid grid-cols-2 gap-4">
               <div className="p-4 bg-gray-50 rounded">
-                <p className="text-sm text-gray-600">Total Musicians: (Number of musicians that match your venue's criteria)</p>
+                <p className="text-sm text-gray-600">Total Musicians: (Number of musicians that match your venue criteria)</p>
                 <p className="text-2xl font-bold text-primary-DEFAULT">1000+</p>
               </div>
               <div className="p-4 bg-gray-50 rounded">
