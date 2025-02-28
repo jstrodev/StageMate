@@ -17,7 +17,10 @@ const LandingPage = () => {
       <div className="w-1/2 flex flex-col justify-center items-center px-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-8 text-center">
           <span className="block text-primary-DEFAULT mb-4">StageMate</span>
-          Find the perfect talent for your venue
+        </h1>
+
+        <h1 className="text-4xl font-bold text-gray-900 mb-8 text-center">
+          <span className="block text-primary-DEFAULT mb-4">Create memorable patron experiences</span>
         </h1>
 
         {/* Three statements */}
@@ -27,7 +30,7 @@ const LandingPage = () => {
               Book Smarter
             </h3>
             <p className="text-gray-600 text-sm">
-              Find and book the perfect talent for your venue
+              Book the perfect talent for your venue
             </p>
           </div>
           <div className="text-center">
@@ -35,15 +38,15 @@ const LandingPage = () => {
               Manage Talent
             </h3>
             <p className="text-gray-600 text-sm">
-              Streamline your talent management process
+              Streamline the talent management process
             </p>
           </div>
           <div className="text-center">
             <h3 className="text-xl font-semibold text-primary-DEFAULT mb-2">
-              Enhance Fan Experience
+              Track Performance
             </h3>
             <p className="text-gray-600 text-sm">
-              Create unforgettable experiences for your audience
+              Track the success of your talent
             </p>
           </div>
         </div>
