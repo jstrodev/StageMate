@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "sonner";
 import Layout from "./components/layout/Layout";
 import AuthPage from "./pages/AuthPage";
@@ -76,7 +76,7 @@ function App() {
         />
 
         {/* Catch all */}
-        <Route path="*" element={<div>404 Not Found</div>} />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
   );

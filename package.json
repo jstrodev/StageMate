@@ -6,7 +6,7 @@
     "server": "nodemon server.js",
     "client": "cd client && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "build": "npm install && mkdir -p client/dist && cd client && npm install && (npm run build || echo 'Build failed, using fallback')"
+    "build": "npm install && cd client && npm install && npm run build"
   },
   "repository": {
     "type": "git",

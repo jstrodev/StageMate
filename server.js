@@ -33,39 +33,17 @@ app.get("/api/test", (req, res) => {
 if (process.env.NODE_ENV === "production") {
   try {
     const staticPath = path.join(__dirname, "client/dist");
-
-    // Create dir if it doesn't exist
-    if (!fs.existsSync(staticPath)) {
-      fs.mkdirSync(staticPath, { recursive: true });
-    }
-
-    // Create fallback index.html
-    const indexPath = path.join(staticPath, "index.html");
-    if (!fs.existsSync(indexPath)) {
-      const html = `<!DOCTYPE html>
-      <html>
-      <head>
-        <title>StageMate</title>
-        <style>
-          body { font-family: Arial; text-align: center; margin-top: 50px; }
-          h1 { color: #2196f3; }
-        </style>
-      </head>
-      <body>
-        <h1>Welcome to StageMate</h1>
-        <p>Application is loading...</p>
-      </body>
-      </html>`;
-      fs.writeFileSync(indexPath, html);
-    }
-
     console.log("Serving static files from:", staticPath);
+
+    // Serve static files
     app.use(express.static(staticPath));
 
-    // Catch-all handler for client-side routing
+    // All routes not starting with /api fall back to React router
     app.get("*", (req, res) => {
-      console.log(`Serving index.html for path: ${req.path}`);
-      res.sendFile(indexPath);
+      if (!req.path.startsWith("/api")) {
+        console.log(`Serving React app for path: ${req.path}`);
+        res.sendFile(path.join(staticPath, "index.html"));
+      }
     });
   } catch (error) {
     console.error("Static file setup error:", error);
