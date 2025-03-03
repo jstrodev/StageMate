@@ -6,8 +6,7 @@
     "server": "nodemon server.js",
     "client": "cd client && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "test": "jest",
-    "build": "cd client && npm install && npm run build",
+    "build": "cd client && npm ci && npm run build",
     "install-all": "npm install && cd client && npm install"
   },
   "repository": {
@@ -72,5 +71,8 @@
   "prisma": {
     "seed": "node prisma/seed.js"
   },
-  "main": "server.js"
+  "main": "server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
