@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 const app = express();
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs");
 
 // Configure CORS to allow requests from frontend
 app.use(
@@ -351,15 +352,44 @@ app.get("/api/test", async (req, res) => {
 
 // Serve static files in production
 if (process.env.NODE_ENV === "production") {
-  // Serve static files from the React frontend app
   const clientBuildPath = path.join(__dirname, "client", "dist");
   console.log("Serving static files from:", clientBuildPath);
+
+  // Create client/dist directory if it doesn't exist
+  if (!fs.existsSync(clientBuildPath)) {
+    console.log("Creating dist directory");
+    fs.mkdirSync(clientBuildPath, { recursive: true });
+  }
+
+  // Create a basic index.html file if it doesn't exist
+  const indexPath = path.join(clientBuildPath, "index.html");
+  if (!fs.existsSync(indexPath)) {
+    console.log("Creating basic index.html");
+    const basicHtml = `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>StageMate</title>
+      <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; }
+        h1 { color: #2196f3; }
+        .btn { background: #2196f3; color: white; padding: 10px 20px; border-radius: 4px; text-decoration: none; margin-top: 20px; }
+      </style>
+    </head>
+    <body>
+      <h1>Welcome to StageMate</h1>
+      <p>Your platform for discovering and booking musicians for your venue.</p>
+      <a href="/auth" class="btn">Login/Register</a>
+    </body>
+    </html>`;
+    fs.writeFileSync(indexPath, basicHtml);
+  }
 
   app.use(express.static(clientBuildPath));
 
   // Handle React routing, return all requests to React app
   app.get("*", (req, res) => {
-    const indexPath = path.join(clientBuildPath, "index.html");
     console.log("Serving index.html from:", indexPath);
     res.sendFile(indexPath);
   });
