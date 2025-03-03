@@ -7,8 +7,8 @@
     "client": "cd client && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "prebuild": "echo 'Starting build process...'",
-    "build": "npm install && cd client && npm install && npm run build",
-    "postbuild": "echo 'Build complete. Checking for output files...' && ls -la client/dist || echo 'dist directory not found'"
+    "build": "npm install && node build-client.js",
+    "postbuild": "echo 'Build process completed'"
   },
   "repository": {
     "type": "git",
