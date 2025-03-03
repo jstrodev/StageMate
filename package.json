@@ -6,9 +6,7 @@
     "server": "nodemon server.js",
     "client": "cd client && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "prebuild": "echo 'Starting build process...'",
-    "build": "npm install && node build-client.js",
-    "postbuild": "echo 'Build process completed'"
+    "build": "node build-client.js"
   },
   "repository": {
     "type": "git",
