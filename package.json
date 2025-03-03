@@ -2,12 +2,13 @@
   "name": "stagemate",
   "version": "1.0.0",
   "scripts": {
+    "start": "node server.js",
     "server": "nodemon server.js",
     "client": "cd client && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "test": "jest",
-    "install-all": "npm install && cd client && npm install",
-    "start": "node server.js"
+    "build": "cd client && npm install && npm run build",
+    "install-all": "npm install && cd client && npm install"
   },
   "repository": {
     "type": "git",

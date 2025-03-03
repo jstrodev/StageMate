@@ -36,14 +36,16 @@ const RegisterForm = () => {
           setCredentials({
             token: data.token,
             user: {
-              id: data.user.id,
-              firstName: data.user.firstName,
-              lastName: data.user.lastName,
-              email: data.user.email,
-              venueName: data.user.venueName,
+              id: data.id,
+              firstName: data.firstName,
+              lastName: data.lastName,
+              email: data.email,
+              venueName: data.venueName,
             },
           })
         );
+
+        localStorage.setItem("token", data.token);
 
         toast.success("Registration successful!");
         navigate("/home", { replace: true });

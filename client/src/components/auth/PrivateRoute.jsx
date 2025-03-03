@@ -3,12 +3,12 @@ import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 
 const PrivateRoute = ({ children }) => {
-  const auth = useSelector((state) => state.auth);
+  const { token, user } = useSelector((state) => state.auth);
+  const isAuthenticated = Boolean(token && user?.id);
 
-  console.log("Auth state in PrivateRoute:", auth);
+  console.log("Auth state:", { token, user, isAuthenticated });
 
-  if (!auth.token || !auth.user?.id) {
-    console.log("Redirecting to auth - missing credentials");
+  if (!isAuthenticated) {
     return <Navigate to="/auth" replace />;
   }
 
