@@ -27,163 +27,84 @@ app.use(express.json());
 
 // Middleware to verify JWT tokens
 const verifyToken = (req, res, next) => {
-  const authHeaders = req.headers["authorization"];
-  if (!authHeaders) {
-    return res.status(400).json("No authorization headers present");
-  }
-  console.log("Authorization headers:", authHeaders);
-  const token = authHeaders.split(" ")[1];
+  const authHeader = req.headers["authorization"];
+  if (!authHeader)
+    return res.status(401).json({ message: "No token provided" });
+
+  const token = authHeader.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Invalid token format" });
+
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(401).send({ message: "Unauthorized" });
-    }
-    console.log("Token verified successfully");
+    if (err) return res.status(401).json({ message: "Invalid token" });
     req.user = decoded;
     next();
   });
 };
 
-app.post("/api/users/register", async (req, res, next) => {
-  console.log("Processing registration request");
-  const { email, firstName, lastName, password, venueName } = req.body;
-
-  // Validate required fields
-  if (!email || !firstName || !lastName || !password || !venueName) {
-    return res.status(400).json({
-      message: "All fields are required",
-      missing: {
-        email: !email,
-        firstName: !firstName,
-        lastName: !lastName,
-        password: !password,
-        venueName: !venueName,
-      },
-    });
-  }
-
+app.post("/api/users/register", async (req, res) => {
   try {
-    // Check for existing email in database
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (existingUser) {
-      return res.status(400).json({ message: "Email already in use" });
-    }
-
-    // Hash password for security
+    const { email, password, firstName, lastName, venueName } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user record in database
-    const newUser = await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email,
+        password: hashedPassword,
         firstName,
         lastName,
-        password: hashedPassword,
         venueName,
       },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        venueName: true,
-      },
     });
 
-    console.log("New user created successfully");
-
-    // Generate authentication token
     const token = jwt.sign(
-      {
-        id: newUser.id,
-        email: newUser.email,
-        firstName: newUser.firstName,
-        lastName: newUser.lastName,
-      },
+      { id: user.id, email: user.email },
       process.env.JWT_SECRET,
-      {
-        expiresIn: "24h",
-      }
+      { expiresIn: "24h" }
     );
 
-    res.status(201).json({
-      message: "User registered successfully",
+    res.json({
       token,
-      user: {
-        id: newUser.id,
-        firstName: newUser.firstName,
-        lastName: newUser.lastName,
-        email: newUser.email,
-        venueName: newUser.venueName,
-      },
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      venueName: user.venueName,
     });
   } catch (error) {
-    console.error("Registration error:", {
-      message: error.message,
-      code: error.code,
-      meta: error.meta,
-      stack: error.stack,
-    });
-
-    res.status(500).json({
-      message: "Error registering user",
-      error: error.message,
-    });
+    console.error("Registration error:", error);
+    res.status(400).json({ message: "Registration failed" });
   }
 });
 
-app.post("/api/users/login", async (req, res, next) => {
-  console.log("Login attempt received:", { email: req.body.email }); // Log login attempt
-
-  const { email, password } = req.body;
+app.post("/api/users/login", async (req, res) => {
   try {
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const { email, password } = req.body;
+    const user = await prisma.user.findUnique({ where: { email } });
 
-    console.log("User found:", user ? "yes" : "no"); // Log if user was found
-
-    if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    const passwordCheck = await bcrypt.compare(password, user.password);
-    console.log("Password check:", passwordCheck ? "passed" : "failed"); // Log password check result
-
-    if (!passwordCheck) {
+    if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const token = jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-      },
+      { id: user.id, email: user.email },
       process.env.JWT_SECRET,
-      {
-        expiresIn: "24h",
-      }
+      { expiresIn: "24h" }
     );
 
-    console.log("Login successful for:", user.email); // Log successful login
-
-    res.status(200).json({
+    res.json({
       token,
       id: user.id,
+      email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      email: user.email,
-      message: "Login successful",
+      venueName: user.venueName,
     });
   } catch (error) {
     console.error("Login error:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(400).json({ message: "Login failed" });
   }
 });
+
 app.put("/api/users/update", verifyToken, async (req, res) => {
   try {
     console.log("Received update request:", req.body); // ✅ Log incoming request
@@ -428,16 +349,20 @@ app.get("/api/test", async (req, res) => {
   }
 });
 
-// Add this after your other middleware and before your routes
+// Serve static files in production
 if (process.env.NODE_ENV === "production") {
-  // Serve static files from the React frontend app
   app.use(express.static(path.join(__dirname, "client/build")));
 
-  // Handle React routing, return all requests to React app
-  app.get("*", function (req, res) {
+  app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "client/build", "index.html"));
   });
 }
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Something went wrong!" });
+});
 
 const PORT = process.env.PORT || 3000;
 
