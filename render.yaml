@@ -2,7 +2,7 @@ services:
   - type: web
     name: stagemate
     env: node
-    buildCommand: npm run build
+    buildCommand: "chmod +x ./build.sh && ./build.sh"
     startCommand: npm start
     envVars:
       - key: NODE_VERSION
@@ -12,4 +12,4 @@ services:
     buildFilter:
       paths:
         - package.json
-        - client/** 
+        - client/**
