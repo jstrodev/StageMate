@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: stagemate
+    env: node
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18.17.0
+      - key: NODE_ENV
+        value: production 

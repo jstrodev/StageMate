@@ -352,11 +352,16 @@ app.get("/api/test", async (req, res) => {
 // Serve static files in production
 if (process.env.NODE_ENV === "production") {
   // Serve static files from the React frontend app
-  app.use(express.static(path.join(__dirname, "client/dist")));
+  const clientBuildPath = path.join(__dirname, "client", "dist");
+  console.log("Serving static files from:", clientBuildPath);
+
+  app.use(express.static(clientBuildPath));
 
   // Handle React routing, return all requests to React app
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "client/dist", "index.html"));
+    const indexPath = path.join(clientBuildPath, "index.html");
+    console.log("Serving index.html from:", indexPath);
+    res.sendFile(indexPath);
   });
 }
 
