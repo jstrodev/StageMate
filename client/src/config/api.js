@@ -11,7 +11,7 @@
 // export const updateUserApi = async (token, data) => {
 //   return axios.put("/api/users/update", data, {
 //     headers: {
-//       Authorization: `Bearer ${token}`, 
+//       Authorization: `Bearer ${token}`,
 //       "Content-Type": "application/json",
 //     },
 //   });
@@ -29,9 +29,10 @@ export const endpoints = {
 };
 
 export const updateUserApi = async (token, data) => {
-  return axios.put(endpoints.updateUser, data, { // ✅ Use the defined endpoint
+  return axios.put(endpoints.updateUser, data, {
+    // ✅ Use the defined endpoint
     headers: {
-      Authorization: `Bearer ${token}`, 
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
   });
