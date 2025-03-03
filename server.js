@@ -29,35 +29,93 @@ app.get("/api/test", (req, res) => {
   }
 });
 
-// Static file serving and fallback for client-side routing
-if (process.env.NODE_ENV === "production") {
-  try {
-    const staticPath = path.join(__dirname, "client/dist");
-    console.log("Serving static files from:", staticPath);
+// Fallback HTML content
+const fallbackHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StageMate</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f8f9fa;
+      color: #212529;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .container {
+      max-width: 800px;
+      padding: 2rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #2196f3;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    p {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      color: #495057;
+      margin-bottom: 1.5rem;
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: #2196f3;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+    .btn:hover {
+      background: #0d8aee;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to StageMate</h1>
+    <p>Connecting venues with the perfect musical talent.</p>
+    <p>Our site is currently undergoing maintenance. Please check back soon!</p>
+    
+    <a href="mailto:support@stagemate.com" class="btn">Contact Support</a>
+  </div>
+</body>
+</html>`;
 
-    // Serve static files
-    app.use(express.static(staticPath));
-
-    // All routes not starting with /api fall back to React router
-    app.get("*", (req, res) => {
-      if (!req.path.startsWith("/api")) {
-        console.log(`Serving React app for path: ${req.path}`);
-        res.sendFile(path.join(staticPath, "index.html"));
-      }
-    });
-  } catch (error) {
-    console.error("Static file setup error:", error);
-    // Add a fallback route handler if static setup fails
-    app.get("*", (req, res) => {
-      res.send("Welcome to StageMate. Service is being updated.");
-    });
+// Handle all requests
+app.get("*", (req, res) => {
+  if (req.path.startsWith("/api")) {
+    return res.status(404).json({ message: "API endpoint not found" });
   }
-}
 
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error("Global error:", err);
-  res.status(500).send("Something went wrong!");
+  try {
+    // Try to serve from static directory first
+    const staticPath = path.join(__dirname, "client/dist");
+    const indexPath = path.join(staticPath, "index.html");
+
+    if (fs.existsSync(indexPath)) {
+      console.log(`Serving built index.html from: ${indexPath}`);
+      return res.sendFile(indexPath);
+    } else {
+      // If no built file exists, serve fallback
+      console.log(`No built index.html found, serving fallback HTML`);
+      return res.send(fallbackHTML);
+    }
+  } catch (error) {
+    console.error("Error serving content:", error);
+    return res.send(fallbackHTML);
+  }
 });
 
 // Start server
